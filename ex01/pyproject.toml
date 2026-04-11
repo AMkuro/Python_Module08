@@ -1,16 +1,18 @@
-[tool.poetry]
+[project]
 name = "loading-programs"
 version = "1.0.0"
 description = "For Python_Module08 ex01 loading.py"
-authors = ["miwasaki miwasaki@student.42tokyo.jp"]
+requires-python = ">=3.10"
+dependencies = [
+  "pandas==2.2.3",
+  "numpy==1.26.4",
+  "matplotlib == 3.8.4",
+  "requests == 2.31.0",
+]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-pandas = "2.1.0"
-numpy = "*"
-matplotlib = "3.7.2"
-requests = "2.31.0"
+[tool.poetry]
+package-mode = false
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
