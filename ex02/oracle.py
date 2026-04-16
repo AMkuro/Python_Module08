@@ -71,10 +71,6 @@ VALIDATORS: dict[str, Callable[[str], bool]] = {
 }
 
 
-def identity(val: str) -> str:
-    return val
-
-
 def transform_database_url(url: str) -> str:
     if any(h in url for h in ("localhost", "127.0.0.1", "local")):
         return "Connected to local instance"
@@ -82,10 +78,10 @@ def transform_database_url(url: str) -> str:
 
 
 VALID_DISPLAYS: dict[str, Callable[[str], str] | str] = {
-    "MATRIX_MODE": identity,
+    "MATRIX_MODE": lambda x: x,
     "DATABASE_URL": transform_database_url,
     "API_KEY": "Authenticated",
-    "LOG_LEVEL": identity,
+    "LOG_LEVEL": lambda x: x,
     "ZION_ENDPOINT": "Online",
 }
 
@@ -128,6 +124,40 @@ def config_section(config: dict[str, str]) -> str:
     return lines
 
 
+def config_source_section() -> str:
+    source_line = (
+        ".env file loaded"
+        if os.path.isfile(".env")
+        else "No .env file detected"
+    )
+    return f"""Configuration source:
+{source_line}
+Environment variables override .env when present
+"""
+
+
+def mode_summary_section(config: dict[str, str]) -> str:
+    mode = config.get("MATRIX_MODE")
+    if mode == "development":
+        details = (
+            "development profile detected\n"
+            "Local development settings are active"
+        )
+    elif mode == "production":
+        details = (
+            "production profile detected\n"
+            "Deployment settings should come from the environment"
+        )
+    else:
+        details = (
+            "unknown profile detected\n"
+            "Set MATRIX_MODE to development or production"
+        )
+    return f"""Mode summary:
+{details}
+"""
+
+
 def security_section(config: dict[str, str]) -> str:
     env_ok = os.path.isfile(".env")
     env_status = (
@@ -160,6 +190,8 @@ def main() -> None:
     print("\nORACLE STATUS: Reading the Matrix...\n")
     print(config_section(config))
     print()
+    print(config_source_section())
+    print(mode_summary_section(config))
     print(security_section(config))
 
 
